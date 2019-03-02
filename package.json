@@ -1,0 +1,32 @@
+{
+  "name": "drug-supply-chain",
+  "version": "0.0.1",
+  "description": "Ethereum smart contracts for drug supply chin to orgnize desining and distrbuting drugs globaly ",
+  "main": ".",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "ganache-cli & truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khalidfsh/drug-supply-chain.git"
+  },
+  "keywords": [
+    "DAPP",
+    "solidity",
+    "ethereum",
+    "supplychain",
+    "smartcontract"
+  ],
+  "author": "Khalid F. Shuhail <dev.khalid@me.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/khalidfsh/drug-supply-chain/issues"
+  },
+  "homepage": "https://github.com/khalidfsh/drug-supply-chain#readme",
+  "dependencies": {
+    "openzeppelin-solidity": "2.1.3"
+  }
+}

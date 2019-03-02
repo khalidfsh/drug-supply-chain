@@ -1,0 +1,8 @@
+# Dependency directory
+node_modules
+
+# local secret variables
+.secret
+
+# macOS
+.DS_Store
