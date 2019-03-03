@@ -1,0 +1,25 @@
+{
+  "extends": "solium:all",
+  "plugins": [
+    "security"
+  ],
+  "rules": {
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "indentation": [
+      "error",
+      4
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "function-order": 1,
+    "max-len": 1,
+    "error-reason": 0,
+    "visibility-first": 1,
+    "constructor": 1
+  }
+}
