@@ -48,9 +48,11 @@ contract Designer is Manufacturer {
     }
 
     /// Function to assign caller `msg.sender` to designer role
+    ///@notice designer allways should be a menufacturer, after checking isManufacturer add it if not
     function assignMeAsDesigner() public {
         _addDesigner(msg.sender);
-        _addManufacturer(msg.sender);
+        if (!isManufacturer(msg.sender))
+            _addManufacturer(msg.sender);
     }
 
     /// Function to renounce caller `msg.sender` from designer role
