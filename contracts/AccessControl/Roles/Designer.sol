@@ -6,6 +6,7 @@ import "openzeppelin-solidity/contracts/access/Roles.sol";
 /// Import `Manafacturer` Role contract
 import "./Manufacturer.sol";
 
+
 /// @author Khalid F.Sh
 /// @title A Designer Role Contract
 /// @dev contract for adding, removing and checking an address in the container '_designers' Role

@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 /// Import the 'Roles' library from OpenZeppelin contracts package
 import "openzeppelin-solidity/contracts/access/Roles.sol";
 
+
 /// @author Khalid F.Sh
 /// @title A Consumer Role Contract
 /// @dev contract for adding, removing and checking an address in the container '_consumers' Role.
