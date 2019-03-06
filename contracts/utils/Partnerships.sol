@@ -31,12 +31,12 @@ library Partnerships {
     }
 
     function add(
-        Partnership storage partnership, 
-        address payable account, 
-        string memory name, 
+        Partnership storage partnership,
+        address payable account,
+        string memory name,
         uint _shares
-    ) 
-        internal 
+    )
+        internal
     {
         uint shares = partnership.defultSharesPresntage;
         require(account != address(0));
@@ -44,7 +44,7 @@ library Partnerships {
         if (partnership.state == PartnershipState.Restricted) {
             require(msg.sender == partnership.owner);
             shares = _shares;
-        }     
+        }
         if (partnership.state == PartnershipState.Closed)
             return;
 
@@ -56,7 +56,7 @@ library Partnerships {
         partnership.partners[partnership.partnersIndex] = newPartner;
         partnership.indexOfPartners[account] = partnership.partnersIndex;
         partnership.partnersIndex += 1;
-        
+
 
 
     }
@@ -66,7 +66,7 @@ library Partnerships {
         require(has(partnership, account));
 
         partnership.bearer[account] = false;
-        delete partnership.partners[partnership.indexOfPartners[account]];     
+        delete partnership.partners[partnership.indexOfPartners[account]];
         delete partnership.indexOfPartners[account];
     }
 

@@ -13,5 +13,13 @@ import "openzeppelin-solidity/contracts/ownership/Secondary.sol";
 /// @author Khalid F.Sh
 /// @title Main Chain Contract
 contract MainChain is SupplyChain, Ownable, Secondary {
-    
+    constructor() public {
+
+    }
+
+    // Kill function if required
+    function kill() public onlyOwner() {
+        selfdestruct(msg.sender);
+    }
+
 }

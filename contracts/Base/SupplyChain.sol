@@ -18,12 +18,12 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
     constructor() public {
 
     }
-    
+
     /// Function helps Designer to estaplish a new Drug Design
     function designDrug(
-        string memory _designerName, 
-        string memory _drugName, 
-        string memory _description, 
+        string memory _designerName,
+        string memory _drugName,
+        string memory _description,
         string memory _notes
     )
         public
@@ -57,8 +57,8 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
     }
 
     // Function to approve drug by a regulator only
-    function approveDrug(uint _udpc) 
-        public 
+    function approveDrug(uint _udpc)
+        public
         onlyRegulator()
         whenNotPaused()
     {
@@ -84,7 +84,7 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
     }
 
     /// Function helps manufacturer to manufactur a new Drug Loud
-    function manufacturDrugsLoud(uint _udpc, uint quantity) 
+    function manufacturDrugsLoud(uint _udpc, uint quantity)
         public
         onlyManufacturer()
         onlyManufacturPartnerOf(_udpc)
@@ -94,7 +94,7 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
 
     /// Function helps distributor to buy a Drug Loud
     /// it can be quantity only order but i think its not important for now
-    function buyDrugsLoud(uint _slu, address _receiver) 
+    function buyDrugsLoud(uint _slu, address _receiver)
         public
         payable
         onlyDistributor()
@@ -116,11 +116,11 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
 
         require(msg.value >= totalPrice, "Not Enough!");
         uint amountToReturn = msg.value - totalPrice;
-        if (amountToReturn != 0) 
+        if (amountToReturn != 0)
             address(msg.sender).transfer(amountToReturn);
-        
+
         super.buyDrugsLoud(_slu, _receiver);
-        
+
         sallerId.transfer(shareOfSaller);
         orignalSallerId.transfer(totalPrice - shareOfSaller);
     }
@@ -134,15 +134,15 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
     {
         uint price = dItems[_pku].price;
         address payable sallerId = dItems[_pku].currentOwnerId;
-        
+
         require(msg.value >= price, "Not Enough!");
         uint amountToReturn = msg.value - price;
-        if (amountToReturn != 0) 
+        if (amountToReturn != 0)
             address(msg.sender).transfer(amountToReturn);
 
         super.purchaseDrug(_pku);
 
         sallerId.transfer(price);
-    }  
-    
+    }
+
 }
