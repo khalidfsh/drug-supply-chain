@@ -12,6 +12,6 @@ import "openzeppelin-solidity/contracts/ownership/Secondary.sol";
 
 /// @author Khalid F.Sh
 /// @title Main Chain Contract
-contract MainChain is SupplyChain, Ownable, Secondary, Pausable {
+contract MainChain is SupplyChain, Ownable, Secondary {
     
 }
