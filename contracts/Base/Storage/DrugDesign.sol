@@ -65,4 +65,63 @@ contract DrugDesign {
     event RestrictPartnerTransfered(uint udpc, address partner);
     event PartnerClosed(uint udpc);
 
+    /// Modifier that checks the paid enough as expected and refunds the remaining balance
+    modifier checkDrugDesignPaymentValue(uint _udpc) {
+        require(msg.value >= dDItems[_udpc].salePrice, "Not Enough!");
+        _;
+        uint _price = dDItems[_udpc].salePrice;
+        uint amountToReturn = msg.value - _price;
+        if (amountToReturn != 0) 
+            address(msg.sender).transfer(amountToReturn);
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isOwned(uint _udpc) {
+        require(dDItems[_udpc].state == DrugDesignState.Owned);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Tested
+    modifier isTested(uint _udpc) {
+        require(dDItems[_udpc].state == DrugDesignState.Tested);
+        _;
+    }
+    
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Approved
+    modifier isApproved(uint _udpc) {
+        require(dDItems[_udpc].state == DrugDesignState.Approved);
+        _;
+    }
+
+    /// Modifier that checks if the caller he is the owner of Drug Design
+    modifier onlyOwnerOf(uint _udpc) {
+        require(dDItems[_udpc].owner == msg.sender);
+        _;
+    }
+
+    /// Modifier that checks if the caller he is the owner of Drug Design
+    modifier drugDesignForSale(uint _udpc) {
+        require(dDItems[_udpc].state == DrugDesignState.ForSale);
+        _;
+    }
+    
+    /// Modifier that checks if an DrugDesignItem.manufacturers.state of a udpc is Opened
+    modifier isPartnerOpened(uint _udpc) {
+        require(dDItems[_udpc].manufacturers.state == Partnerships.PartnershipState.Opened);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.manufacturers.state of a udpc is Restricted
+    modifier isPartnerRestricted(uint _udpc) {
+        require(dDItems[_udpc].manufacturers.state == Partnerships.PartnershipState.Restricted);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.manufacturers.state of a udpc is Closed
+    modifier onlyManufacturPartnerOf(uint _udpc) {
+        require(dDItems[_udpc].manufacturers.has(msg.sender));
+        _;
+    }
+
+
 }

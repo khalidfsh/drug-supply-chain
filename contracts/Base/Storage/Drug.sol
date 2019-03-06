@@ -64,4 +64,91 @@ contract Drug {
     event Received(uint slu);
     /// Event to emit them for users in functions, accept `pku` as input as one product unit expected
     event Purchased(uint pku);
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isManufactured(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        require(dItems[firstPKU].state == DrugState.Manufactured);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isPacked(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        require(dItems[firstPKU].state == DrugState.Packed);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier drugLoudforSale(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        require(dItems[firstPKU].state == DrugState.ForSale);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isSold(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        require(dItems[firstPKU].state == DrugState.Sold);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isShipped(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        require(dItems[firstPKU].state == DrugState.Shipped);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isEnvTracked(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        require(dItems[firstPKU].envUpdateCounter != 0);
+        _;
+    }
+
+    modifier isReceived(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        require(dItems[firstPKU].state == DrugState.Received);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier onlyManufacturerOf(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        bool isManuf = dItems[firstPKU].manufacturerId == msg.sender;
+        require(isManuf);
+        _;
+    }
+
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier onlyManufacturerOrDistributorOf(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        bool isManuf = dItems[firstPKU].manufacturerId == msg.sender;
+        bool isDistr = dItems[firstPKU].deistributorId == msg.sender;
+        require(isManuf || isDistr);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier onlyRetailerOf(uint _slu) {
+        uint firstPKU = stockLouds[_slu][0];
+        bool isReta = dItems[firstPKU].retailerId == msg.sender;
+        require(isReta);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isDrugReceived(uint _pku) {
+        require(dItems[_pku].state == DrugState.Received);
+        _;
+    }
+
+    /// Modifier that checks if an DrugDesignItem.state of a udpc is Owned
+    modifier isDrugEnvTracked(uint _pku) {
+        require(dItems[_pku].envUpdateCounter != 0);
+        _;
+    }
+    
 }
