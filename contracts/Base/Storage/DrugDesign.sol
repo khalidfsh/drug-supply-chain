@@ -1,9 +1,13 @@
 pragma solidity ^0.5.0;
 
+/// Import Partnerships library
+import "../../utils/Partnerships.sol";
+
 
 /// @author Khalid F.Sh
 /// @title Drug Design Chain Contract
 contract DrugDesign {
+    using Partnerships for Partnerships.Partnership;
     
     /// Variable for tracking Universal Drug Product Code (UDPC)
     uint udpc;
