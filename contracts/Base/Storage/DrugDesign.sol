@@ -8,7 +8,7 @@ import "../../utils/Partnerships.sol";
 /// @title Drug Design Chain Contract
 contract DrugDesign {
     using Partnerships for Partnerships.Partnership;
-    
+
     /// Variable for tracking Universal Drug Product Code (UDPC)
     uint udpc;
 
@@ -17,7 +17,7 @@ contract DrugDesign {
 
     /// Enumaration for defining variety of Drug Design State
     enum DrugDesignState {
-        Owned,             
+        Owned,
         Tested,
         Approved,
         ForSale
@@ -71,7 +71,7 @@ contract DrugDesign {
         _;
         uint _price = dDItems[_udpc].salePrice;
         uint amountToReturn = msg.value - _price;
-        if (amountToReturn != 0) 
+        if (amountToReturn != 0)
             address(msg.sender).transfer(amountToReturn);
     }
 
@@ -86,7 +86,7 @@ contract DrugDesign {
         require(dDItems[_udpc].state == DrugDesignState.Tested);
         _;
     }
-    
+
     /// Modifier that checks if an DrugDesignItem.state of a udpc is Approved
     modifier isApproved(uint _udpc) {
         require(dDItems[_udpc].state == DrugDesignState.Approved);
@@ -104,7 +104,7 @@ contract DrugDesign {
         require(dDItems[_udpc].state == DrugDesignState.ForSale);
         _;
     }
-    
+
     /// Modifier that checks if an DrugDesignItem.manufacturers.state of a udpc is Opened
     modifier isPartnerOpened(uint _udpc) {
         require(dDItems[_udpc].manufacturers.state == Partnerships.PartnershipState.Opened);
@@ -126,15 +126,15 @@ contract DrugDesign {
     /// Constructor Function sets up UDPC to 0
     constructor() public {
         udpc = 0;
-    } 
+    }
 
     /// Function helps Designer to estaplish a new Drug Design
     function designDrug(
-        string memory _designerName, 
-        string memory _drugName, 
-        string memory _description, 
+        string memory _designerName,
+        string memory _drugName,
+        string memory _description,
         string memory _notes
-    ) 
+    )
         public
     {
         udpc ++;
@@ -162,10 +162,10 @@ contract DrugDesign {
     {
 
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
-            msg.sender, 
-            block.timestamp, 
-            _isPassed, 
-            _description, 
+            msg.sender,
+            block.timestamp,
+            _isPassed,
+            _description,
             _notes
         );
         dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
@@ -187,10 +187,10 @@ contract DrugDesign {
     {
 
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
-            msg.sender, 
-            block.timestamp, 
-            _isPassed, 
-            _description, 
+            msg.sender,
+            block.timestamp,
+            _isPassed,
+            _description,
             _notes
         );
         dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
@@ -208,10 +208,10 @@ contract DrugDesign {
     }
 
     /// Function to sale a drug design
-    function upForSale(uint _udpc,uint _price) 
-        public 
-        onlyOwnerOf(_udpc) 
-        isApproved(_udpc) 
+    function upForSale(uint _udpc,uint _price)
+        public
+        onlyOwnerOf(_udpc)
+        isApproved(_udpc)
     {
         dDItems[_udpc].salePrice = _price;
         dDItems[_udpc].state = DrugDesignState.ForSale;
@@ -223,7 +223,7 @@ contract DrugDesign {
     function purchaseDrugDesign(uint _udpc)
         public
         payable
-        drugDesignForSale(_udpc) 
+        drugDesignForSale(_udpc)
         checkDrugDesignPaymentValue(_udpc)
     {
         dDItems[_udpc].state = DrugDesignState.Approved;
@@ -234,9 +234,9 @@ contract DrugDesign {
     }
 
     /// Function to open partnership for manufacturer
-    function openManufactPartnership(uint _udpc, uint _shares) 
+    function openManufactPartnership(uint _udpc, uint _shares)
         public
-        isApproved(_udpc) 
+        isApproved(_udpc)
         onlyOwnerOf(_udpc)
     {
         require(_shares <= 100, "Most be less than %100");
@@ -257,7 +257,7 @@ contract DrugDesign {
         emit PartnerGained(_udpc);
     }
 
-    /// Function to close manufacturer partnership 
+    /// Function to close manufacturer partnership
     function closeManufactPartnership(uint _udpc)
         public
         onlyOwnerOf(_udpc)
@@ -271,8 +271,8 @@ contract DrugDesign {
 
     /// Function to open partnership for manufacturer
     function restrictManufactPartnership(uint _udpc)
-        public 
-        isApproved(_udpc) 
+        public
+        isApproved(_udpc)
         onlyOwnerOf(_udpc)
     {
         dDItems[_udpc].manufacturers.state = Partnerships.PartnershipState.Restricted;
@@ -282,9 +282,9 @@ contract DrugDesign {
 
     /// Function to build a manufacturer partner contract by the owner when its restracted
     function buildRestrictPartnerContract(
-        uint _udpc, 
-        address payable _partner, 
-        string memory _name, 
+        uint _udpc,
+        address payable _partner,
+        string memory _name,
         uint _shares
     )
         public
