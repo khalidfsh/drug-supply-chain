@@ -19,7 +19,7 @@ contract Drug {
 
     // Enumaration for defining variety of Drug State
     enum DrugState {
-        Manufactured,             
+        Manufactured,
         Packed,
         ForSale,
         Sold,
@@ -156,4 +156,175 @@ contract Drug {
         slu = 0;
         pku = 0;
     }
+
+    /// Function helps manufacturer to manufactur a new Drug Loud
+    function manufacturDrugsLoud(uint _udpc, uint quantity) public {
+        uint _slu = slu++;
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = pku++;
+            DrugItem memory newDrugItem;
+            newDrugItem.udpc = _udpc;
+            newDrugItem.pku = _pku;
+            newDrugItem.slu = _slu;
+            newDrugItem.state = DrugState.Manufactured;
+            newDrugItem.currentOwnerId = msg.sender;
+            newDrugItem.manufacturerId = msg.sender;
+            newDrugItem.envUpdateCounter = 0;
+
+            dItems[_pku] = newDrugItem;
+            stockLouds[_slu].push(_pku);
+        }
+        emit Manufactured(_slu);
+    }
+
+    /// Function helps manufacturer to Pack a isManufactured Drug Loud
+    function packDrugsLoud(uint _slu)
+        public
+        isManufactured(_slu)
+        onlyManufacturerOf(_slu)
+    {
+        uint quantity = stockLouds[_slu].length;
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = stockLouds[_slu][i];
+            dItems[_pku].state = DrugState.Packed;
+            dItems[_pku].packingTimeStamp = now;
+        }
+        emit Packed(_slu);
+    }
+
+    /// Function helps manufacturer to add Drug Loud for sale
+    function addDrugsLoud(uint _slu, uint _unitPrice)
+        public
+        isPacked(_slu)
+        onlyManufacturerOf(_slu)
+    {
+        uint quantity = stockLouds[_slu].length;
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = stockLouds[_slu][i];
+            dItems[_pku].state = DrugState.ForSale;
+            dItems[_pku].price = _unitPrice;
+        }
+        emit Packed(_slu);
+    }
+
+    /// Function helps distributor to buy a Drug Loud
+    /// it can be quantity only order but i think its not important for now
+    function buyDrugsLoud(uint _slu, address _receiver)
+        public
+        payable
+        drugLoudforSale(_slu)
+    {
+        uint quantity = stockLouds[_slu].length;
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = stockLouds[_slu][i];
+            dItems[_pku].state = DrugState.Sold;
+            dItems[_pku].currentOwnerId = msg.sender;
+            dItems[_pku].deistributorId = msg.sender;
+            dItems[_pku].retailerId = _receiver;
+
+        }
+        emit Sold(_slu);
+    }
+
+    /// Function helps manufacturer to ship a Drug Loud
+    function shipDrugsLoud(uint _slu)
+        public
+        isSold(_slu)
+        onlyManufacturerOf(_slu)
+    {
+        uint quantity = stockLouds[_slu].length;
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = stockLouds[_slu][i];
+            dItems[_pku].state = DrugState.Shipped;
+        }
+        emit Shipped(_slu);
+    }
+
+    /// Function helps manufacturer and distributor to update Drug Loud envuirment
+    function updateDrugsLoudShippmentEnv (
+        uint _slu,
+        uint _humidity,
+        uint _temprture
+    )
+        public
+        isShipped(_slu)
+        onlyManufacturerOrDistributorOf(_slu)
+    {
+        uint quantity = stockLouds[_slu].length;
+        EnvUpdateOpj memory _envUpdate = EnvUpdateOpj(
+            now,
+            _humidity,
+            _temprture,
+            msg.sender
+        );
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = stockLouds[_slu][i];
+
+            dItems[_pku].envHistory[dItems[_pku].envUpdateCounter] = _envUpdate;
+            dItems[_pku].envUpdateCounter ++;
+        }
+        emit EnvUpdated(_slu);
+    }
+
+    /// Function helps manufacturer to Pack a isManufactured Drug Loud
+    function receiveDrugsLoud (
+        uint _slu
+    )
+        public
+        isShipped(_slu)
+        isEnvTracked(_slu)
+        onlyRetailerOf(_slu)
+    {
+        uint quantity = stockLouds[_slu].length;
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = stockLouds[_slu][i];
+
+            dItems[_pku].state = DrugState.Received;
+            dItems[_pku].currentOwnerId = msg.sender;
+        }
+        emit Received(_slu);
+    }
+
+    /// Function helps manufacturer to Pack a isManufactured Drug Loud
+    function updateDrugsLoudStockEnv (
+        uint _slu,
+        uint _humidity,
+        uint _temprture
+    )
+        public
+        isReceived(_slu)
+        onlyRetailerOf(_slu)
+    {
+        uint quantity = stockLouds[_slu].length;
+        EnvUpdateOpj memory _envUpdate = EnvUpdateOpj(
+            now,
+            _humidity,
+            _temprture,
+            msg.sender
+        );
+
+        for (uint i = 0; i < quantity; i++) {
+            uint _pku = stockLouds[_slu][i];
+
+            if (dItems[_pku].state != DrugState.Purchased) {
+                dItems[_pku].envHistory[dItems[_pku].envUpdateCounter] = _envUpdate;
+                dItems[_pku].envUpdateCounter ++;
+            }
+        }
+        emit EnvUpdated(_slu);
+    }
+
+    /// Function helps manufacturer to Pack a isManufactured Drug Loud
+    function purchaseDrug (uint _pku)
+        public
+        payable
+        isDrugReceived(_pku)
+        isDrugEnvTracked(_pku)
+    {
+        dItems[_pku].state = DrugState.Purchased;
+        dItems[_pku].currentOwnerId = msg.sender;
+
+        emit Purchased(_pku);
+    }
+
 }
