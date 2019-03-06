@@ -49,6 +49,7 @@ contract DrugDesign {
         uint salePrice;
         uint testIndexed;
         mapping(uint => DrugDesignTestCase) testCases;
+        Partnerships.Partnership manufacturers;
     }
 
     /// Event to emit them for users in functions, accept `udpc` as input
@@ -58,5 +59,10 @@ contract DrugDesign {
     event UpForSale(uint updc);
     event DrugDesignPurchased(uint udpc);
     event SaleCanceled(uint updc);
+    event UpForPartnered(uint updc);
+    event UpForRestrictPartnered(uint updc);
+    event PartnerGained(uint udpc);
+    event RestrictPartnerTransfered(uint udpc, address partner);
+    event PartnerClosed(uint udpc);
 
 }
