@@ -57,7 +57,7 @@ contract Designer is Manufacturer {
     }
 
     /// Function to renounce caller `msg.sender` from designer role
-    function renounceMeFromDesiner() public {
+    function renounceMeFromDesigner() public {
         _removeDesigner(msg.sender);
     }
 

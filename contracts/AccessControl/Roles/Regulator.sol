@@ -27,7 +27,7 @@ contract Regulator {
 
     // modifier that checks to see if `msg.sender` has regulator role
     modifier onlyRegulator() {
-        require(isRegulator(msg.sender));
+        require(isRegulator(msg.sender), "You Don't have Premetion!");
         _;
     }
 
@@ -48,7 +48,7 @@ contract Regulator {
     /// Function to add account to regulator role
     ///@param account address to be Added
     ///@notice `onlyRegulator` modifier  assignd to sure that the whole role groub regulated
-    function addRegulator(address account) public onlyRegulator {
+    function addRegulator(address account) public onlyRegulator() {
         _addRegulator(account);
     }
 
