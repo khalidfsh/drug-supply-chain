@@ -49,10 +49,17 @@ contract('Supplychain Contracts:', async (accounts) => {
         )
         assert.isFalse(await supplyChain.amIRegulator.call({from: regulator}))
         
-        let tx = await supplyChain.addRegulator(regulator, {from: deployer})
-        truffleAssert.eventEmitted(tx, 'RegulatorAdded', (ev) => {
+        let txa = await supplyChain.addRegulator(regulator, {from: deployer})
+        truffleAssert.eventEmitted(txa, 'RegulatorAdded', (ev) => {
             return ev.account === regulator;
         });
+
+        let txr = await supplyChain.renounceMeFromRegulator({from: regulator})
+        truffleAssert.eventEmitted(txr, 'RegulatorRemoved', (ev) => {
+            return ev.account === regulator;
+        });
+
+        await supplyChain.addRegulator(regulator, {from: deployer})
         amIRegulator = await supplyChain.amIRegulator.call({from: regulator})
         assert.isTrue(amIRegulator)
     });
@@ -60,7 +67,7 @@ contract('Supplychain Contracts:', async (accounts) => {
     it("ACCESS: ManufacturerRole: User can assign, renounce and event `ManufacturerAdded` & `ManufacturerRemoved` emitted", async() => {
         let txa = await supplyChain.assignMeAsManufacturer({from: manufacturer})
         truffleAssert.eventEmitted(txa, 'ManufacturerAdded', (ev) => {
-            return ev.account === designer;
+            return ev.account === manufacturer;
         })
         let txr = await supplyChain.renounceMeFromManufacturer({from: manufacturer})
         truffleAssert.eventEmitted(txr, 'ManufacturerRemoved', (ev) => {
@@ -74,11 +81,11 @@ contract('Supplychain Contracts:', async (accounts) => {
     it("ACCESS: DistributorRole: User can assign, renounce and event `DistributorAdded` & `DistributorRemoved` emitted", async() => {
         let txa = await supplyChain.assignMeAsDistributor({from: distributor})
         truffleAssert.eventEmitted(txa, 'DistributorAdded', (ev) => {
-            return ev.account === designer;
+            return ev.account === distributor;
         })
         let txr = await supplyChain.renounceMeFromDistributor({from: distributor})
         truffleAssert.eventEmitted(txr, 'DistributorRemoved', (ev) => {
-            return ev.account === Distributor;
+            return ev.account === distributor;
         })
         await supplyChain.assignMeAsDistributor({from: distributor})
         let amIDistributor = await supplyChain.amIDistributor.call({from: distributor})
@@ -88,7 +95,7 @@ contract('Supplychain Contracts:', async (accounts) => {
     it("ACCESS: RetailerRole: User can assign, renounce and event `RetailerAdded` & `RetailerRemoved` emitted", async() => {
         let txa = await supplyChain.assignMeAsRetailer({from: retailer})
         truffleAssert.eventEmitted(txa, 'RetailerAdded', (ev) => {
-            return ev.account === designer;
+            return ev.account === retailer;
         })
         let txr = await supplyChain.renounceMeFromRetailer({from: retailer})
         truffleAssert.eventEmitted(txr, 'RetailerRemoved', (ev) => {
@@ -102,16 +109,19 @@ contract('Supplychain Contracts:', async (accounts) => {
     it("ACCESS: ConsumerRole: User can assign, renounce and event `ConsumerAdded` & `ConsumerRemoved` emitted", async() => {
         let txa = await supplyChain.assignMeAsConsumer({from: consumer})
         truffleAssert.eventEmitted(txa, 'ConsumerAdded', (ev) => {
-            return ev.account === Consumer;
+            return ev.account === consumer;
         })
         let txr = await supplyChain.renounceMeFromConsumer({from: consumer})
         truffleAssert.eventEmitted(txr, 'ConsumerRemoved', (ev) => {
             return ev.account === consumer;
         })
-        await supplyChain.assignMeAsConsumer({from: Consumer})
+        await supplyChain.assignMeAsConsumer({from: consumer})
         let amIConsumer = await supplyChain.amIConsumer.call({from: consumer})
         assert.isTrue(amIConsumer)     
     });
 
+    it("STORAGE: DrugDesign: Designer only can add new DrugDesign and event `Owned` emitted", async() => {
+        
+    });
 
 });
