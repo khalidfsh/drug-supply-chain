@@ -54,4 +54,14 @@ contract Drug {
         uint envUpdateCounter;
     }
 
+    /// Event to emit them for users in functions, accept `slu` as input as stock expected
+    event Manufactured(uint slu);
+    event Packed(uint slu);
+    event ForSale(uint slu);
+    event Sold(uint slu);
+    event Shipped(uint slu);
+    event EnvUpdated(uint slu);
+    event Received(uint slu);
+    /// Event to emit them for users in functions, accept `pku` as input as one product unit expected
+    event Purchased(uint pku);
 }

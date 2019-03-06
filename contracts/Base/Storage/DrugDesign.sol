@@ -46,4 +46,13 @@ contract DrugDesign {
         uint testIndexed;
         mapping(uint => DrugDesignTestCase) testCases;
     }
+
+    /// Event to emit them for users in functions, accept `udpc` as input
+    event Owned(uint udpc);
+    event TestCaseAdded(uint udpc);
+    event Approved(uint udpc);
+    event UpForSale(uint updc);
+    event DrugDesignPurchased(uint udpc);
+    event SaleCanceled(uint updc);
+
 }
