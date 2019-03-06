@@ -33,4 +33,3 @@ contract Rolable is Consumer, Designer, Distributor, Regulator, Retailer {
         designer = amIDesigner();
     }
 }
-

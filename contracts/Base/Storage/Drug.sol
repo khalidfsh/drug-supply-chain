@@ -5,7 +5,7 @@ import "../../AccessControl/Rolable.sol";
 
 
 /// @author Khalid F.Sh
-/// @title Drug Design Chain Contract
-contract DrugDesign is Rolable {
-    
+/// @title Drug Chain Contract
+contract Drug is Rolable {
+
 }
