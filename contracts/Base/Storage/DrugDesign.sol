@@ -128,4 +128,174 @@ contract DrugDesign {
         udpc = 0;
     } 
 
+    /// Function helps Designer to estaplish a new Drug Design
+    function designDrug(
+        string memory _designerName, 
+        string memory _drugName, 
+        string memory _description, 
+        string memory _notes
+    ) 
+        public
+    {
+        udpc ++;
+        DrugDesignItem memory newDDItem;
+        newDDItem.udpc = udpc;
+        newDDItem.owner = msg.sender;
+        newDDItem.designerName = _designerName;
+        newDDItem.state = DrugDesignState.Owned;
+        newDDItem.metaData = DrugDesignMeta(_drugName, _description, _notes);
+        newDDItem.salePrice = 0;
+        dDItems[udpc] = newDDItem;
+        emit Owned(udpc);
+    }
+
+    /// Add Test Case for Drug Design by owner
+    function addTestCase(
+        uint _udpc,
+        string memory _description,
+        bool _isPassed,
+        string memory _notes
+    )
+        public
+        onlyOwnerOf(_udpc)
+        isOwned(_udpc)
+    {
+
+        DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
+            msg.sender, 
+            block.timestamp, 
+            _isPassed, 
+            _description, 
+            _notes
+        );
+        dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
+        dDItems[_udpc].testIndexed ++;
+        dDItems[_udpc].state = DrugDesignState.Tested;
+
+        emit TestCaseAdded(_udpc);
+    }
+
+    // Add Test Case for Drug Design by regulator
+    function addTestCaseByRegulaor(
+        uint _udpc,
+        string memory _description,
+        bool _isPassed,
+        string memory _notes
+    )
+        public
+        isOwned(_udpc)
+    {
+
+        DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
+            msg.sender, 
+            block.timestamp, 
+            _isPassed, 
+            _description, 
+            _notes
+        );
+        dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
+        dDItems[_udpc].testIndexed ++;
+        dDItems[_udpc].state = DrugDesignState.Tested;
+
+        emit TestCaseAdded(_udpc);
+    }
+
+    /// Function to approve drug by a regulator only
+    function approveDrug(uint _udpc) public isTested(_udpc) {
+        dDItems[_udpc].state = DrugDesignState.Approved;
+
+        emit Approved(_udpc);
+    }
+
+    /// Function to sale a drug design
+    function upForSale(uint _udpc,uint _price) 
+        public 
+        onlyOwnerOf(_udpc) 
+        isApproved(_udpc) 
+    {
+        dDItems[_udpc].salePrice = _price;
+        dDItems[_udpc].state = DrugDesignState.ForSale;
+
+        emit UpForSale(_udpc);
+    }
+
+    /// Function to purchase a drug design
+    function purchaseDrugDesign(uint _udpc)
+        public
+        payable
+        drugDesignForSale(_udpc) 
+        checkDrugDesignPaymentValue(_udpc)
+    {
+        dDItems[_udpc].state = DrugDesignState.Approved;
+        dDItems[_udpc].owner = msg.sender;
+        dDItems[_udpc].manufacturers.owner = msg.sender;
+
+        emit DrugDesignPurchased(_udpc);
+    }
+
+    /// Function to open partnership for manufacturer
+    function openManufactPartnership(uint _udpc, uint _shares) 
+        public
+        isApproved(_udpc) 
+        onlyOwnerOf(_udpc)
+    {
+        require(_shares <= 100, "Most be less than %100");
+        dDItems[_udpc].manufacturers.defultSharesPresntage = _shares;
+        dDItems[_udpc].manufacturers.state = Partnerships.PartnershipState.Opened;
+
+        emit UpForPartnered(_udpc);
+    }
+
+    /// Function to build a manufacturer partner contract
+    function buildPartnerContract(uint _udpc, string memory _name)
+        public
+        isApproved(_udpc)
+        isPartnerOpened(_udpc)
+    {
+        dDItems[_udpc].manufacturers.add(msg.sender, _name, 0);
+
+        emit PartnerGained(_udpc);
+    }
+
+    /// Function to close manufacturer partnership 
+    function closeManufactPartnership(uint _udpc)
+        public
+        onlyOwnerOf(_udpc)
+        isPartnerOpened(_udpc)
+    {
+        dDItems[_udpc].manufacturers.state = Partnerships.PartnershipState.Closed;
+        dDItems[_udpc].manufacturers.defultSharesPresntage = 0;
+
+        emit PartnerClosed(_udpc);
+    }
+
+    /// Function to open partnership for manufacturer
+    function restrictManufactPartnership(uint _udpc)
+        public 
+        isApproved(_udpc) 
+        onlyOwnerOf(_udpc)
+    {
+        dDItems[_udpc].manufacturers.state = Partnerships.PartnershipState.Restricted;
+
+        emit UpForRestrictPartnered(_udpc);
+    }
+
+    /// Function to build a manufacturer partner contract by the owner when its restracted
+    function buildRestrictPartnerContract(
+        uint _udpc, 
+        address payable _partner, 
+        string memory _name, 
+        uint _shares
+    )
+        public
+        isApproved(_udpc)
+        onlyOwnerOf(_udpc)
+        isPartnerRestricted(_udpc)
+    {
+        require(_shares <= 100, "Most be less than %100");
+        dDItems[_udpc].manufacturers.add(_partner, _name, _shares);
+
+        emit RestrictPartnerTransfered(_udpc, _partner);
+    }
+
 }
