@@ -150,5 +150,10 @@ contract Drug {
         require(dItems[_pku].envUpdateCounter != 0);
         _;
     }
-    
+
+    /// Constructor Function sets up SLU and PKU to 0
+    constructor() public {
+        slu = 0;
+        pku = 0;
+    }
 }

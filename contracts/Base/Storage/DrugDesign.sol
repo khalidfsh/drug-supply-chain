@@ -123,5 +123,9 @@ contract DrugDesign {
         _;
     }
 
+    /// Constructor Function sets up UDPC to 0
+    constructor() public {
+        udpc = 0;
+    } 
 
 }
