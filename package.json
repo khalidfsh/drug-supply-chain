@@ -28,5 +28,9 @@
   "homepage": "https://github.com/khalidfsh/drug-supply-chain#readme",
   "dependencies": {
     "openzeppelin-solidity": "2.1.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "truffle-assertions": "^0.8.0"
   }
 }
