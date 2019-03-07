@@ -160,9 +160,8 @@ contract DrugDesign {
     )
         public
         onlyOwnerOf(_udpc)
-        isOwned(_udpc)
     {
-
+        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -172,8 +171,8 @@ contract DrugDesign {
         );
         dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
         dDItems[_udpc].testIndexed ++;
-        dDItems[_udpc].state = DrugDesignState.Tested;
-
+        if (dDItems[_udpc].state == DrugDesignState.Owned)
+            dDItems[_udpc].state = DrugDesignState.Tested;
         emit TestCaseAdded(_udpc);
     }
 
@@ -185,9 +184,8 @@ contract DrugDesign {
         string memory _notes
     )
         public
-        isOwned(_udpc)
     {
-
+        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -197,7 +195,8 @@ contract DrugDesign {
         );
         dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
         dDItems[_udpc].testIndexed ++;
-        dDItems[_udpc].state = DrugDesignState.Tested;
+        if (dDItems[_udpc].state == DrugDesignState.Owned)
+            dDItems[_udpc].state = DrugDesignState.Tested;
 
         emit TestCaseAdded(_udpc);
     }
