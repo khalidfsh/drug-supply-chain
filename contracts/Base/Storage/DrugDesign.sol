@@ -57,11 +57,11 @@ contract DrugDesign {
     event Owned(uint udpc);
     event TestCaseAdded(uint udpc);
     event Approved(uint udpc);
-    event UpForSale(uint updc);
+    event UpForSale(uint udpc);
     event DrugDesignPurchased(uint udpc);
-    event SaleCanceled(uint updc);
-    event UpForPartnered(uint updc);
-    event UpForRestrictPartnered(uint updc);
+    event SaleCanceled(uint udpc);
+    event UpForPartnered(uint udpc);
+    event UpForRestrictPartnered(uint udpc);
     event PartnerGained(uint udpc);
     event RestrictPartnerTransfered(uint udpc, address partner);
     event PartnerClosed(uint udpc);
@@ -147,6 +147,7 @@ contract DrugDesign {
         newDDItem.state = DrugDesignState.Owned;
         newDDItem.metaData = DrugDesignMeta(_drugName, _description, _notes);
         newDDItem.salePrice = 0;
+        newDDItem.manufacturers.partnersIndex = 1;
         dDItems[udpc] = newDDItem;
         emit Owned(udpc);
     }
@@ -309,6 +310,9 @@ contract DrugDesign {
             string memory drugName,
             string memory currentState,
             bool forSale,
+            uint salePrice,
+            string memory partnershipState,
+            uint partnershipShares,
             uint numberOfTests,
             uint numberOfManufacturers
         )
@@ -329,8 +333,13 @@ contract DrugDesign {
             currentState = 'ForSale';
         else if (dDItems[_udpc].state == DrugDesignState.ForSale)
             currentState = 'ForSale';
-        
+
+        partnershipState = dDItems[_udpc].manufacturers.partnershipState();
+        partnershipShares = dDItems[_udpc].manufacturers.defultSharesPresntage;
+
         forSale = (dDItems[_udpc].salePrice != 0);
+        salePrice = dDItems[_udpc].salePrice;
+
         numberOfTests = dDItems[_udpc].testIndexed;
         numberOfManufacturers = dDItems[_udpc].manufacturers.numberOfActive();
     }
@@ -370,6 +379,14 @@ contract DrugDesign {
             dDItems[_udpc].testCases[_testIndex].notes
         );
         
+    }
+
+    function isManufacturerOf(uint _udpc, address _manufacturerId) public view returns(bool) {
+        return dDItems[_udpc].manufacturers.has(_manufacturerId);
+    }
+
+    function manufacturerSharesOf(uint _udpc, address _manufacturerId) public view returns(uint) {
+        return dDItems[_udpc].manufacturers.sharesOf(_manufacturerId);
     }
 
 
