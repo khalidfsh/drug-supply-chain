@@ -30,6 +30,8 @@ library Partnerships {
         uint shares;
     }
 
+    event testing(uint shares);
+
     function add(
         Partnership storage partnership,
         address payable account,
@@ -49,16 +51,15 @@ library Partnerships {
             return;
 
         partnership.bearer[account] = true;
+
         Partnerships.Partner memory newPartner;
         newPartner.partnerID = account;
         newPartner.name = name;
         newPartner.shares = shares;
+        
         partnership.partners[partnership.partnersIndex] = newPartner;
         partnership.indexOfPartners[account] = partnership.partnersIndex;
         partnership.partnersIndex += 1;
-
-
-
     }
 
     function remove(Partnership storage partnership, address account) internal {
@@ -76,23 +77,32 @@ library Partnerships {
         return partnership.bearer[account];
     }
 
-    function sharesOf(Partnership storage partnership, address account) internal view returns(uint) {
-        require(account != address(0));
-        require(has(partnership, account));
-
-        return partnership.partners[partnership.indexOfPartners[account]].shares / 100;
-    }
-
-    function active(Partnership storage partnership) internal view returns(Partner[] memory) {
+    function allActive(Partnership storage partnership) internal view returns(Partner[] memory) {
         Partner[] memory _partners = new Partner[](partnership.partnersIndex);
         uint _index = 0;
-        for (uint i = 0; i < partnership.partnersIndex; i++) {
+        for (uint i = 1; i < partnership.partnersIndex; i++) {
             if (partnership.partners[i].partnerID != address(0)) {
                 _partners[_index] = partnership.partners[i];
                 _index += 1;
             }
         }
         return _partners;
+    }
+
+    function sharesOf(Partnership storage partnership, address account) internal view returns(uint) {
+        require(account != address(0));
+        require(has(partnership, account));
+        uint indexOfPartner = partnership.indexOfPartners[account];
+        return partnership.partners[indexOfPartner].shares;
+    }
+
+    function partnershipState(Partnership storage partnership) internal view returns(string memory) {
+        if (partnership.state == PartnershipState.Opened)
+            return 'Open';
+        else if (partnership.state == PartnershipState.Closed)
+            return 'Close';
+        else if (partnership.state == PartnershipState.Restricted)
+            return 'Restrict'; 
     }
 
     function numberOfActive(Partnership storage partnership) internal view returns(uint) {
