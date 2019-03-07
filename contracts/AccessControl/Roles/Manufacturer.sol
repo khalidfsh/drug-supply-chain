@@ -27,7 +27,7 @@ contract Manufacturer {
 
     /// modifier that checks to see if `msg.sender` has manufacturer role
     modifier onlyManufacturer() {
-        require(isManufacturer(msg.sender));
+        require(isManufacturer(msg.sender), 'Not A Manufacturer!');
         _;
     }
 

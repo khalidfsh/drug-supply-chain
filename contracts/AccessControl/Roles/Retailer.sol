@@ -27,7 +27,7 @@ contract Retailer {
 
     /// modifier that checks to see if `msg.sender` has retailer role
     modifier onlyRetailer() {
-        require(isRetailer(msg.sender));
+        require(isRetailer(msg.sender), 'Not A Retailer!');
         _;
     }
 

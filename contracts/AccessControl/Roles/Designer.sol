@@ -30,7 +30,7 @@ contract Designer is Manufacturer {
 
     /// modifier that checks to see if `msg.sender` has designer role
     modifier onlyDesigner() {
-        require(isDesigner(msg.sender));
+        require(isDesigner(msg.sender), 'Not A Designer!');
         _;
     }
 

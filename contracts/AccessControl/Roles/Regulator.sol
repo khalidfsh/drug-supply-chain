@@ -27,7 +27,7 @@ contract Regulator {
 
     // modifier that checks to see if `msg.sender` has regulator role
     modifier onlyRegulator() {
-        require(isRegulator(msg.sender), "You Don't have Premetion!");
+        require(isRegulator(msg.sender), 'Not A Regulator!');
         _;
     }
 
