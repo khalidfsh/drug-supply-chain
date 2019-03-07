@@ -42,7 +42,8 @@ contract DrugDesign {
     /// Structure for keeping Drug Design fields structured
     struct DrugDesignItem {
         uint udpc;
-        address payable owner;
+        address payable currentOwner;
+        address designerId;
         string designerName;
         DrugDesignState state;
         DrugDesignMeta metaData;
@@ -93,13 +94,13 @@ contract DrugDesign {
         _;
     }
 
-    /// Modifier that checks if the caller he is the owner of Drug Design
+    /// Modifier that checks if the caller he is the currentOwner of Drug Design
     modifier onlyOwnerOf(uint _udpc) {
-        require(dDItems[_udpc].owner == msg.sender);
+        require(dDItems[_udpc].currentOwner == msg.sender);
         _;
     }
 
-    /// Modifier that checks if the caller he is the owner of Drug Design
+    /// Modifier that checks if the caller he is the currentOwner of Drug Design
     modifier drugDesignForSale(uint _udpc) {
         require(dDItems[_udpc].state == DrugDesignState.ForSale);
         _;
@@ -140,7 +141,8 @@ contract DrugDesign {
         udpc ++;
         DrugDesignItem memory newDDItem;
         newDDItem.udpc = udpc;
-        newDDItem.owner = msg.sender;
+        newDDItem.currentOwner = msg.sender;
+        newDDItem.designerId = msg.sender;
         newDDItem.designerName = _designerName;
         newDDItem.state = DrugDesignState.Owned;
         newDDItem.metaData = DrugDesignMeta(_drugName, _description, _notes);
@@ -149,7 +151,7 @@ contract DrugDesign {
         emit Owned(udpc);
     }
 
-    /// Add Test Case for Drug Design by owner
+    /// Add Test Case for Drug Design by currentOwner
     function addTestCase(
         uint _udpc,
         string memory _description,
@@ -227,7 +229,7 @@ contract DrugDesign {
         checkDrugDesignPaymentValue(_udpc)
     {
         dDItems[_udpc].state = DrugDesignState.Approved;
-        dDItems[_udpc].owner = msg.sender;
+        dDItems[_udpc].currentOwner = msg.sender;
         dDItems[_udpc].manufacturers.owner = msg.sender;
 
         emit DrugDesignPurchased(_udpc);
@@ -280,7 +282,7 @@ contract DrugDesign {
         emit UpForRestrictPartnered(_udpc);
     }
 
-    /// Function to build a manufacturer partner contract by the owner when its restracted
+    /// Function to build a manufacturer partner contract by the currentOwner when its restracted
     function buildRestrictPartnerContract(
         uint _udpc,
         address payable _partner,
@@ -297,5 +299,80 @@ contract DrugDesign {
 
         emit RestrictPartnerTransfered(_udpc, _partner);
     }
+
+    function fetchDrugDesignData(uint _udpc) 
+        public 
+        view 
+        returns(
+            address currentOwner,
+            address designerId,
+            string memory designerName,
+            string memory drugName,
+            string memory currentState,
+            bool forSale,
+            uint numberOfTests,
+            uint numberOfManufacturers
+        )
+    {
+        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
+        currentOwner = dDItems[_udpc].currentOwner;
+        designerId = dDItems[_udpc].designerId;
+        designerName = dDItems[_udpc].designerName;
+        drugName = dDItems[_udpc].metaData.name;
+
+        if (dDItems[_udpc].state == DrugDesignState.Owned)
+            currentState = 'Created';
+        else if (dDItems[_udpc].state == DrugDesignState.Tested)
+            currentState = 'Tested';
+        else if (dDItems[_udpc].state == DrugDesignState.Approved)
+            currentState = 'Approved';
+        else if (dDItems[_udpc].state == DrugDesignState.ForSale)
+            currentState = 'ForSale';
+        else if (dDItems[_udpc].state == DrugDesignState.ForSale)
+            currentState = 'ForSale';
+        
+        forSale = (dDItems[_udpc].salePrice != 0);
+        numberOfTests = dDItems[_udpc].testIndexed;
+        numberOfManufacturers = dDItems[_udpc].manufacturers.numberOfActive();
+    }
+
+    function featchDrugDesignMetaData(uint _udpc) 
+        public
+        view
+        returns(
+            string memory name,
+            string memory description,
+            string memory notes
+        )
+    {
+        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
+        (name, description, notes) = (
+            dDItems[_udpc].metaData.name,
+            dDItems[_udpc].metaData.description,
+            dDItems[_udpc].metaData.notes
+        );
+    }
+
+    function featchDrugDesignTestCases(uint _udpc, uint _testIndex) 
+        public
+        view
+        returns(
+            string memory description,
+            bool isPassed, 
+            string  memory notes
+        )
+    {
+        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
+        require(_testIndex < dDItems[_udpc].testIndexed, 'Test Case Not Created Yet!');
+        
+        (description, isPassed, notes) = (
+            dDItems[_udpc].testCases[_testIndex].description,
+            dDItems[_udpc].testCases[_testIndex].isPassed,
+            dDItems[_udpc].testCases[_testIndex].notes
+        );
+        
+    }
+
+
 
 }
