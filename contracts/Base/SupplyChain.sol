@@ -98,7 +98,6 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
         public
         payable
         onlyDistributor()
-        drugLoudforSale(_slu)
         whenNotPaused()
     {
         /// reciever most be reteiler
@@ -109,9 +108,11 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
         uint price = sampleUnit.price;
         uint quantity = stockLouds[_slu].length;
         uint totalPrice = price*quantity;
+        
         ///colect shared worker addresses to payed them
-        address payable sallerId = address(sampleUnit.currentOwnerId);
-        uint shareOfSaller = dDItems[_udpc].manufacturers.sharesOf(sallerId)*totalPrice;
+        address payable sallerId = address(sampleUnit.manufacturerId);
+        uint shareOfSallerPresntage = dDItems[_udpc].manufacturers.sharesOf(sallerId);
+        uint shareOfSaller = (shareOfSallerPresntage*totalPrice)/100;
         address payable orignalSallerId = dDItems[_udpc].manufacturers.owner;
 
         require(msg.value >= totalPrice, "Not Enough!");
@@ -120,7 +121,7 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
             address(msg.sender).transfer(amountToReturn);
 
         super.buyDrugsLoud(_slu, _receiver);
-
+        
         sallerId.transfer(shareOfSaller);
         orignalSallerId.transfer(totalPrice - shareOfSaller);
     }

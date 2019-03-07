@@ -45,8 +45,8 @@ contract Drug {
         uint slu;
         DrugState state;
         address payable currentOwnerId;
-        address manufacturerId;
-        address deistributorId;
+        address payable manufacturerId;
+        address payable deistributorId;
         address retailerId;
         uint price;
         uint packingTimeStamp;
@@ -159,16 +159,16 @@ contract Drug {
 
     /// Function helps manufacturer to manufactur a new Drug Loud
     function manufacturDrugsLoud(uint _udpc, uint quantity) public {
-        uint _slu = slu++;
+        uint _slu = ++slu;
         DrugItem memory newDrugItem;
         newDrugItem.udpc = _udpc;
         newDrugItem.slu = _slu;
         newDrugItem.state = DrugState.Manufactured;
         newDrugItem.currentOwnerId = msg.sender;
         newDrugItem.manufacturerId = msg.sender;
-            newDrugItem.envUpdateCounter = 0;
+        newDrugItem.envUpdateCounter = 0;
         for (uint i = 0; i < quantity; i++) {
-            uint _pku = pku++;
+            uint _pku = ++pku;
             newDrugItem.pku = _pku;
             dItems[_pku] = newDrugItem;
             
@@ -204,7 +204,7 @@ contract Drug {
             dItems[_pku].state = DrugState.ForSale;
             dItems[_pku].price = _unitPrice;
         }
-        emit Packed(_slu);
+        emit ForSale(_slu);
     }
 
     /// Function helps distributor to buy a Drug Loud
