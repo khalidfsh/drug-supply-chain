@@ -180,4 +180,238 @@ it("ACCESS: Consumer Role: user can renounce this role,`ConsumerRemoved` emitted
 });
 
 
+
+
+
+
+
+
+/// BASE Tests:
+it("BASE: DrugDesign: Designer can add new DrugDesign and event `Owned` emitted, `designDrug()`", async() => {
+    let tx = await supplyChain.designDrug(
+        DrugDesign1.designerName, 
+        DrugDesign1.name, 
+        DrugDesign1.description, 
+        DrugDesign1.notes, 
+        {from: Designer}
+    )
+
+    truffleAssert.eventEmitted(tx, 'Owned', (ev) => {
+        return ev.udpc == DrugDesign1.udpc;
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    let DrugDesignMetaData = await supplyChain.featchDrugDesignMetaData.call(DrugDesign1.udpc);
+
+    assert.equal(DrugDesignData.designerId, Designer)
+    assert.equal(DrugDesignData.designerName, DrugDesign1.designerName)
+    assert.equal(DrugDesignData.drugName, DrugDesign1.name)
+    assert.equal(DrugDesignMetaData.description, DrugDesign1.description)
+    assert.equal(DrugDesignMetaData.notes, DrugDesign1.notes)
+});
+
+it("BASE: DrugDesign: Another Roles cannot add new DrugDesign,`onlyDesigner()` `designDrug()`", async() => {
+
+    await truffleAssert.reverts(
+        supplyChain.designDrug(
+            DrugDesign2.designerName, 
+            DrugDesign2.name, 
+            DrugDesign2.description, 
+            DrugDesign2.notes, 
+            {from: Deployer}
+        ),
+        'Not A Designer!'
+    )
+
+    await truffleAssert.reverts(
+        supplyChain.fetchDrugDesignData.call(DrugDesign2.udpc),
+        'Given UDPC Not Created Yet!'
+    )
+});
+
+/// BASE Tests:
+it("BASE: DrugDesign: Designer can add test case event `TestCaseAdded` emitted, `addTestCase()`", async() => {
+    let tx = await supplyChain.addTestCase(
+        DrugDesign1.udpc, 
+        TestCase1.description, 
+        TestCase1.isPassed,
+        TestCase1.notes, 
+        {from: Designer}
+    )
+
+    truffleAssert.eventEmitted(tx, 'TestCaseAdded', (ev) => {
+        return ev.udpc == DrugDesign1.udpc;
+    })
+
+    let DrugDesignTestCase = await supplyChain.featchDrugDesignTestCases.call(DrugDesign1.udpc, 0);
+
+
+    assert.equal(DrugDesignTestCase.description, TestCase1.description)
+    assert.equal(DrugDesignTestCase.isPassed, TestCase1.isPassed)
+    assert.equal(DrugDesignTestCase.notes, TestCase1.notes)
+});
+
+it("BASE: DrugDesign: Regulator can add test case event `TestCaseAdded` emitted, `addTestCase()`", async() => {
+    let tx = await supplyChain.addTestCaseByRegulaor(
+        DrugDesign1.udpc, 
+        TestCase2.description, 
+        TestCase2.isPassed,
+        TestCase2.notes, 
+        {from: Regulator}
+    )
+
+    truffleAssert.eventEmitted(tx, 'TestCaseAdded', (ev) => {
+        return ev.udpc == DrugDesign1.udpc;
+    })
+
+    let DrugDesignTestCase = await supplyChain.featchDrugDesignTestCases.call(DrugDesign1.udpc, 1);
+
+
+    assert.equal(DrugDesignTestCase.description, TestCase2.description)
+    assert.equal(DrugDesignTestCase.isPassed, TestCase2.isPassed)
+    assert.equal(DrugDesignTestCase.notes, TestCase2.notes)
+});
+
+it("BASE: DrugDesign: Regulator approve drug, event `Approved` emitted, `approveDrug()`", async() => {
+    let tx = await supplyChain.approveDrug(
+        DrugDesign1.udpc, 
+        {from: Regulator}
+    )
+    truffleAssert.eventEmitted(tx, 'Approved', (ev) => {
+        return ev.udpc == DrugDesign1.udpc;
+    })
+});
+
+it("BASE: DrugDesign: Designer can put drug for sale, event `UpForSale` emitted, `upForSale()`", async() => {
+    
+    let tx = await supplyChain.upForSale(
+        DrugDesign1.udpc,
+        DrugDesign1.salePrice,
+        {from: Designer}
+    )
+    truffleAssert.eventEmitted(tx, 'UpForSale', (ev) => {
+        assert.equal(ev.udpc, DrugDesign1.udpc)
+        return true
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    assert.equal(DrugDesignData.salePrice, DrugDesign1.salePrice)
+});
+
+it("BASE: DrugDesign: Manufacturer can buy drug design, event `DrugDesignPurchased` emitted, `purchaseDrugDesign()`", async() => {
+    await supplyChain.assignMeAsManufacturer({from: Manufacturer_Owner})
+    
+    let tx = await supplyChain.purchaseDrugDesign(
+        DrugDesign1.udpc,
+        {from: Manufacturer_Owner, value: DrugDesign1.salePrice}
+    )
+    truffleAssert.eventEmitted(tx, 'DrugDesignPurchased', (ev) => {
+        assert.equal(ev.udpc, DrugDesign1.udpc)
+        return true
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    assert.equal(DrugDesignData.currentOwner, Manufacturer_Owner)
+});
+
+it("BASE: DrugDesign: Owner of drug design can open acception of partner, event `UpForPartnered` emitted, `openManufactPartnership()`", async() => {
+    
+    let tx = await supplyChain.openManufactPartnership(
+        DrugDesign1.udpc,
+        DrugDesign1.partnerShares,
+        {from: Manufacturer_Owner}
+    )
+    truffleAssert.eventEmitted(tx, 'UpForPartnered', (ev) => {
+        assert.equal(ev.udpc, DrugDesign1.udpc)
+        return true
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    assert.equal(DrugDesignData.partnershipState, 'Open')
+    assert.equal(DrugDesignData.partnershipShares, DrugDesign1.partnerShares)
+});
+
+it("BASE: DrugDesign: Manufacturer can build partner contract of drug design , event `PartnerGained` emitted, `buildPartnerContract()`", async() => {
+    await supplyChain.assignMeAsManufacturer({from: Manufacturer_Partner})
+
+    let tx = await supplyChain.buildPartnerContract(
+        DrugDesign1.udpc,
+        'PartnerA',
+        {from: Manufacturer_Partner}
+    )
+    truffleAssert.eventEmitted(tx, 'PartnerGained', (ev) => {
+        assert.equal(ev.udpc, DrugDesign1.udpc)
+        return true
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    assert.equal(DrugDesignData.numberOfManufacturers, 1)
+
+    let isManufacturerOf =  await supplyChain.isManufacturerOf.call(DrugDesign1.udpc, Manufacturer_Partner)
+    assert.isTrue(isManufacturerOf)
+
+    let manufacturerShares = await supplyChain.manufacturerSharesOf.call(DrugDesign1.udpc, Manufacturer_Partner)
+    assert.equal(manufacturerShares, DrugDesign1.partnerShares)
+
+});
+
+it("BASE: DrugDesign: Owner of drug design can close acception of partner, event `PartnerClosed` emitted, `closeManufactPartnership()`", async() => {
+    
+    let tx = await supplyChain.closeManufactPartnership(
+        DrugDesign1.udpc,
+        {from: Manufacturer_Owner}
+    )
+    truffleAssert.eventEmitted(tx, 'PartnerClosed', (ev) => {
+        assert.equal(ev.udpc, DrugDesign1.udpc)
+        return true
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    assert.equal(DrugDesignData.partnershipState, 'Close')
+    assert.equal(DrugDesignData.partnershipShares, 0)
+
+});
+
+it("BASE: DrugDesign: Owner of drug design can restrict acception of partner, event `UpForRestrictPartnered` emitted, `restrictManufactPartnership()`", async() => {
+    
+    let tx = await supplyChain.restrictManufactPartnership(
+        DrugDesign1.udpc,
+        {from: Manufacturer_Owner}
+    )
+    truffleAssert.eventEmitted(tx, 'UpForRestrictPartnered', (ev) => {
+        assert.equal(ev.udpc, DrugDesign1.udpc)
+        return true
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    assert.equal(DrugDesignData.partnershipState, 'Restrict')
+});
+
+it("BASE: DrugDesign: Only owner of drug design can build partner contract of drug design , event `RestrictPartnerTransfered` emitted, `buildRestrictPartnerContract()`", async() => {
+    
+    let tx = await supplyChain.buildRestrictPartnerContract(
+        DrugDesign1.udpc,
+        Manufacturer,
+        'PartnerB',
+        DrugDesign1.restrictedShares,
+        {from: Manufacturer_Owner}
+    )
+
+    truffleAssert.eventEmitted(tx, 'RestrictPartnerTransfered', (ev) => {
+        assert.equal(ev.udpc, DrugDesign1.udpc)
+        return true
+    })
+
+    let DrugDesignData = await supplyChain.fetchDrugDesignData.call(DrugDesign1.udpc);
+    assert.equal(DrugDesignData.numberOfManufacturers, 2)
+
+    let isManufacturerOf =  await supplyChain.isManufacturerOf.call(DrugDesign1.udpc, Manufacturer)
+    assert.isTrue(isManufacturerOf)
+
+    let manufacturerShares = await supplyChain.manufacturerSharesOf.call(DrugDesign1.udpc, Manufacturer)
+    assert.equal(manufacturerShares, DrugDesign1.restrictedShares)
+
+});
+
+
 });
