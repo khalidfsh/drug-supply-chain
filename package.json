@@ -30,6 +30,7 @@
     "openzeppelin-solidity": "2.1.3"
   },
   "devDependencies": {
+    "bn.js": "^4.11.8",
     "chai": "^4.2.0",
     "truffle-assertions": "^0.8.0"
   }
