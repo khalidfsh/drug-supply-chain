@@ -160,18 +160,18 @@ contract Drug {
     /// Function helps manufacturer to manufactur a new Drug Loud
     function manufacturDrugsLoud(uint _udpc, uint quantity) public {
         uint _slu = slu++;
+        DrugItem memory newDrugItem;
+        newDrugItem.udpc = _udpc;
+        newDrugItem.slu = _slu;
+        newDrugItem.state = DrugState.Manufactured;
+        newDrugItem.currentOwnerId = msg.sender;
+        newDrugItem.manufacturerId = msg.sender;
+            newDrugItem.envUpdateCounter = 0;
         for (uint i = 0; i < quantity; i++) {
             uint _pku = pku++;
-            DrugItem memory newDrugItem;
-            newDrugItem.udpc = _udpc;
             newDrugItem.pku = _pku;
-            newDrugItem.slu = _slu;
-            newDrugItem.state = DrugState.Manufactured;
-            newDrugItem.currentOwnerId = msg.sender;
-            newDrugItem.manufacturerId = msg.sender;
-            newDrugItem.envUpdateCounter = 0;
-
             dItems[_pku] = newDrugItem;
+            
             stockLouds[_slu].push(_pku);
         }
         emit Manufactured(_slu);
