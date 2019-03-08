@@ -110,7 +110,7 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
         uint totalPrice = price*quantity;
         
         ///colect shared worker addresses to payed them
-        address payable sallerId = address(sampleUnit.manufacturerId);
+        address payable sallerId = address(sampleUnit.currentOwnerId);
         uint shareOfSallerPresntage = dDItems[_udpc].manufacturers.sharesOf(sallerId);
         uint shareOfSaller = (shareOfSallerPresntage*totalPrice)/100;
         address payable orignalSallerId = dDItems[_udpc].manufacturers.owner;
@@ -136,6 +136,10 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
         uint price = dItems[_pku].price;
         address payable sallerId = dItems[_pku].currentOwnerId;
 
+        address payable retailerId = address(uint160(dItems[_pku].retailerId));
+        uint retialerBounty = (price*5) /100;
+        uint developerBounty = (price*1) /100; 
+
         require(msg.value >= price, "Not Enough!");
         uint amountToReturn = msg.value - price;
         if (amountToReturn != 0)
@@ -143,7 +147,8 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
 
         super.purchaseDrug(_pku);
 
-        sallerId.transfer(price);
+        sallerId.transfer(price - (retialerBounty + developerBounty));
+        retailerId.transfer(retialerBounty);
     }
 
 }
