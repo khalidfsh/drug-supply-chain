@@ -111,9 +111,6 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
         
         ///colect shared worker addresses to payed them
         address payable sallerId = address(sampleUnit.currentOwnerId);
-        uint shareOfSallerPresntage = dDItems[_udpc].manufacturers.sharesOf(sallerId);
-        uint shareOfSaller = (shareOfSallerPresntage*totalPrice)/100;
-        address payable orignalSallerId = dDItems[_udpc].manufacturers.owner;
 
         require(msg.value >= totalPrice, "Not Enough!");
         uint amountToReturn = msg.value - totalPrice;
@@ -122,8 +119,17 @@ contract SupplyChain is Rolable, Pausable, DrugDesign, Drug {
 
         super.buyDrugsLoud(_slu, _receiver);
         
-        sallerId.transfer(shareOfSaller);
-        orignalSallerId.transfer(totalPrice - shareOfSaller);
+        if (sallerId == dDItems[_udpc].currentOwner){
+            sallerId.transfer(totalPrice);
+        }
+        else {
+            uint shareOfSallerPresntage = dDItems[_udpc].manufacturers.sharesOf(sallerId);
+            uint shareOfSaller = (shareOfSallerPresntage*totalPrice)/100;
+            address payable orignalSallerId = dDItems[_udpc].manufacturers.owner;
+            sallerId.transfer(shareOfSaller);
+            orignalSallerId.transfer(totalPrice - shareOfSaller);
+        }
+        
     }
 
     /// Function helps manufacturer to Pack a isManufactured Drug Loud

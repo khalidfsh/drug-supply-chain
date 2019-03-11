@@ -120,7 +120,7 @@ contract DrugDesign {
 
     /// Modifier that checks if an DrugDesignItem.manufacturers.state of a udpc is Closed
     modifier onlyManufacturPartnerOf(uint _udpc) {
-        require(dDItems[_udpc].manufacturers.has(msg.sender));
+        require((dDItems[_udpc].manufacturers.has(msg.sender)) || (address(dDItems[_udpc].currentOwner) == msg.sender));
         _;
     }
 

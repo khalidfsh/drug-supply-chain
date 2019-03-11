@@ -408,10 +408,10 @@ contract Drug {
         public
         view
         returns(
-            uint[] memory
+            uint[] memory loadPKUs
         )
     {
-        return stockLouds[_slu];
+        loadPKUs = stockLouds[_slu];
     }
 
     function fetchEnvHistory(uint _pku)
