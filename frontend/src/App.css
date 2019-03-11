@@ -1,3 +1,14 @@
 .App {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  position: relative;
   text-align: center;
+}
+
+.centered-Loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -50px 0px 0px -50px;
 }

@@ -8,4 +8,4 @@ node_modules
 .DS_Store
 
 # contracts build
-build
+frontend/src/contracts
