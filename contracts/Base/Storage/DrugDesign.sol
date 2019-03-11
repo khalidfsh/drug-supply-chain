@@ -301,7 +301,7 @@ contract DrugDesign {
     }
 
     function fetchDrugDesignData(uint _udpc) 
-        public 
+        external 
         view 
         returns(
             address currentOwner,
@@ -345,7 +345,7 @@ contract DrugDesign {
     }
 
     function featchDrugDesignMetaData(uint _udpc) 
-        public
+        external
         view
         returns(
             string memory name,
@@ -362,7 +362,7 @@ contract DrugDesign {
     }
 
     function featchDrugDesignTestCases(uint _udpc, uint _testIndex) 
-        public
+        external
         view
         returns(
             string memory description,
@@ -381,11 +381,11 @@ contract DrugDesign {
         
     }
 
-    function isManufacturerOf(uint _udpc, address _manufacturerId) public view returns(bool) {
+    function isManufacturerOf(uint _udpc, address _manufacturerId) external view returns(bool) {
         return dDItems[_udpc].manufacturers.has(_manufacturerId);
     }
 
-    function manufacturerSharesOf(uint _udpc, address _manufacturerId) public view returns(uint) {
+    function manufacturerSharesOf(uint _udpc, address _manufacturerId) external view returns(uint) {
         return dDItems[_udpc].manufacturers.sharesOf(_manufacturerId);
     }
 

@@ -326,7 +326,7 @@ contract Drug {
     
     /// public data featching functions
     function fetchDrugLoaudData(uint _slu) 
-        public 
+        external 
         view 
         returns(
             uint quantity,
@@ -405,7 +405,7 @@ contract Drug {
     }
 
     function fetchLoudPKUs(uint _slu)
-        public
+        external
         view
         returns(
             uint[] memory loadPKUs
@@ -415,7 +415,7 @@ contract Drug {
     }
 
     function fetchEnvHistory(uint _pku)
-        public
+        external
         view
         isDrugEnvTracked(_pku)
         returns(
