@@ -5,7 +5,7 @@ import { useWeb3Context } from 'web3-react'
 import { Spinner, Alert, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { Box, Flex, Card, Heading, Text, Button, OutlineButton, Input, Textarea, Checkbox, Icon } from 'rimble-ui'
 
-import SupplyChainContract from "./contracts/MainChain.json";
+import SupplyChainContractAbi from "./contracts/MainChain.json";
 
 let instance = null
 
@@ -19,7 +19,7 @@ function App() {
 	const [isLoading, setIsLoading] = useState(true)
 	const [logs, setLogs] = useState([])
 	const [errMessage, setErrMessage] = useState('')
-
+ 
 
 	useEffect(() => {
 		if (context.connectorName === undefined) {
@@ -30,12 +30,11 @@ function App() {
 			}
 		} else {
 			if (context != null) {
-				const deployedNetwork = SupplyChainContract.networks[context.networkId];
+			const deployedNetwork = SupplyChainContract.networks[context.networkId];
 				const supplychainInstance = new context.library.eth.Contract(
 					SupplyChainContract.abi,
 					deployedNetwork && deployedNetwork.address,
 				)
-				console.log(supplychainInstance)
 				instance = supplychainInstance
 			}
 		}
@@ -53,13 +52,13 @@ function App() {
 	
 	const currentAccountRoles = async () =>{
 		let myRoles = await instance.methods.whoAmI().call({from: context.account})
+		addToLogs(myRoles)
 		const keys = Object.keys(myRoles)
 		const values = Object.values(myRoles)
 		let updatedRoles = []
 		for (var i = 6; i < 12; i++) {
 			updatedRoles.push({role: keys[i], isAssgin: values[i]})
 		}
-		console.log(updatedRoles)
 		setRoles(updatedRoles)
 	}
 
@@ -275,10 +274,6 @@ function App() {
 
 	const manufactDrugLoad = async() => {
 		try {
-			console.log(
-				document.getElementsByName("manufacturUDPC")[0].value,
-				document.getElementsByName("manufacturQuantity")[0].value.toString()
-			)
 			let tx = await instance.methods.manufacturDrugsLoud(
 				document.getElementsByName("manufacturUDPC")[0].value,
 				document.getElementsByName("manufacturQuantity")[0].value.toString()
@@ -314,9 +309,7 @@ function App() {
 		try {
       let valueInWei = context.library.utils.toWei(document.getElementsByName("buyValue")[0].value)
       let retaileracount = (document.getElementsByName("buyRetailerAddress")[0].value)
-      console.log(retaileracount)
       let retailerAddress = context.library.utils.toChecksumAddress(retaileracount)
-      console.log(retailerAddress)
 			let tx = await instance.methods.buyDrugsLoud(
         document.getElementsByName("buySLU")[0].value,
         retaileracount
@@ -405,7 +398,6 @@ function App() {
 		try {
 			let slu = document.getElementsByName("fetchDrugSLU")[0].value
 			let DrugLoadData = await instance.methods.fetchDrugLoaudData(slu).call({from: context.account});
-			console.log(DrugLoadData)
 			addToLogs(DrugLoadData)
 		} catch(err) {
 			setErrMessage(err.message)
@@ -426,7 +418,6 @@ function App() {
 		try {
 			let pku = document.getElementsByName("fetchDrugPKU")[0].value
 			let DrugData = await instance.methods.fetchDrugItemData(pku).call({from: context.account});
-			console.log(DrugData)
 			addToLogs(DrugData)
 		} catch(err) {
 			setErrMessage(err.message)
@@ -436,7 +427,6 @@ function App() {
 		try {
 			let pku = document.getElementsByName("fetchDrugPKU")[0].value
 			let DrugEnvHistory = await instance.methods.fetchEnvHistory(pku).call({from: context.account});
-			console.log(DrugEnvHistory)
 			addToLogs(DrugEnvHistory)
 		} catch(err) {
 			setErrMessage(err.message)
@@ -773,22 +763,19 @@ function App() {
 								<Heading>Drug Design</Heading>
 								<Input type='text' p ={3} m={1} placeholder='UDPC' name='fetchDrugUDPC'/>
 								<Button size='mediam' p ={3} m={1} onClick={()=> {fetchDrugDesignData()}}>Fetch Data</Button>
-							</Card>
-						</Box>
-						<Box m={10} p={20}>
-							<Card>
+								<Text color='green' px={20}>see logs </Text>
+
 								<Heading>Drug Load</Heading>
 								<Input type='text' p ={3} m={1} placeholder='SLU' name='fetchDrugSLU'/>
 								<Button size='mediam' p ={3} m={1} onClick={()=> {fetchDrugLoadData()}}>Fetch Load Data</Button>
 								<Button size='mediam' p ={3} m={1} onClick={()=> {getDrugLoadPKUs()}}>Fetch Load PKUs</Button>
-							</Card>
-						</Box>
-						<Box m={10} p={20}>
-							<Card>
+								<Text color='green' px={20}>see logs </Text>
+
 								<Heading>Drug Design</Heading>
 								<Input type='text' p ={3} m={1} placeholder='PKU' name='fetchDrugPKU'/>
 								<Button size='mediam' p ={3} m={1} onClick={()=> {fetchDrugData()}}>Fetch Data</Button>
 								<Button size='mediam' p ={3} m={1} onClick={()=> {fetchEnvHistory()}}>Fetch Enviurment History</Button>
+								<Text color='green' px={20}>see logs </Text>
 							</Card>
 						</Box>
 					</TabPane>
