@@ -5,7 +5,7 @@ An Ethereum DApp that demonstrates a Supply Chain flow from a Designer of a drug
 
 
 ## UML Architecture
----
+
 ### [Activity Diagram](architecture/ActivityDiagram.png)
 
 ### [Sequence Diagram](architecture/SequenceDiagram.png)
@@ -15,7 +15,7 @@ An Ethereum DApp that demonstrates a Supply Chain flow from a Designer of a drug
 ### [Class Diagram](architecture/ClassDiagram.png)
 
 ## Getting Started
----
+
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 ### Prerequisites
 Please make sure you've already installed ganache-cli, Truffle and enabled MetaMask extension in your browser.
@@ -55,21 +55,21 @@ cd frontend && npm start
 ```
 
 ## Libraries
----
+
 - Partnerships: library keep track partner in a partnership contract with known share. I write it to make project less smaller and to try the power of spilted payment contract.
 - Roles: library from Open Zeppelin contract thats keep track of a mapping list of address in any role based contract.
   
 
 ## IPFS
----
+
 
 ## Deployed Contract Address (Rinkeby)
----
+
 [0x9c9b36c9b8049eb954fc2a8d73fc900132521f21](https://rinkeby.etherscan.io/address/0x9c9b36c9b8049eb954fc2a8d73fc900132521f21)
 
 
 ## TransctionsHash for Live Testing 
----
+
 - Transaction Hash: [0x3fbb56cb35a990fa5d087f1945966902202e628a2758d443c90e1380e674d7ff](https://rinkeby.etherscan.io/tx/0x3fbb56cb35a990fa5d087f1945966902202e628a2758d443c90e1380e674d7ff) Event: Owned(udpc: 1 )
 - Transaction Hash: [0xbe9078f85844da6070fd9247d79c5ece4b6481eadfbebcf021e157e46b54a772](https://rinkeby.etherscan.io/tx/0xbe9078f85844da6070fd9247d79c5ece4b6481eadfbebcf021e157e46b54a772) Event: TestCaseAdded(udpc: 1 )
 - Transaction Hash: [0xe4a31ac3d5027009fb34c78f214f5343d2bd628545077e79656028037d3be54e](https://rinkeby.etherscan.io/tx/0xe4a31ac3d5027009fb34c78f214f5343d2bd628545077e79656028037d3be54e) Event: TestCaseAdded(udpc: 1 )
