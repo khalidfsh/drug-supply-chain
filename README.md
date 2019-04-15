@@ -1,7 +1,7 @@
 # drug-supply-chain
 An Ethereum DApp that demonstrates a Supply Chain flow from a Designer of a drug along to the end user Buyer(consumer). Regulator whos responsable for approve the drug. Manufacturer can act as a owner of a drug design or bulid partner contract with a designer. A Distributor should act as middleman between manufacturer to retailer to last actor in the system consumer.
 
-[Live demo on rinkeby network.])(https://drugn-drugz-ukdhcdvqtk.now.sh/)
+[Live demo on rinkeby network.](https://drugn-drugz-ukdhcdvqtk.now.sh/)
 
 
 ## UML Architecture
