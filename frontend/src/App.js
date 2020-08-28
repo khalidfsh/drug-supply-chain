@@ -5,7 +5,7 @@ import { useWeb3Context } from 'web3-react'
 import { Spinner, Alert, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { Box, Flex, Card, Heading, Text, Button, OutlineButton, Input, Textarea, Checkbox, Icon } from 'rimble-ui'
 
-import SupplyChainContractAbi from "./contracts/MainChain.json";
+import SupplyChainContract from "./contracts/MainChain.json";
 
 let instance = null
 
